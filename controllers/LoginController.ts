@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 class LoginController {
   async login(req: Request, res: Response) {
     const { email, password } = req.body;
+    console.log(email, password)
 
     try {
       const secret = process.env.SECRET || "IkUjYhNbMn%$3@";

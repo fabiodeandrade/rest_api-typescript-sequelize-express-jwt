@@ -1,11 +1,26 @@
 import { Request, Response } from "express";
+import { Model } from "sequelize";
 import { UserModel } from "../database/models/UserModel";
+
+let cache: Model<any, any>[][] = [];
+let cacheTime = 0;
 
 class UsersController {
   async findAll(req: Request, res: Response) {
+    let now = new Date().getTime();
+
     try {
-      const users = await UserModel.findAll();
-      return res.status(200).json(users);
+      if (cache.length > 0 && cacheTime + 5000 > now) {
+        return res.status(200).json(cache);
+      } else {
+        const users = await UserModel.findAll();
+        console.log("Getting from BD")
+
+        cacheTime = new Date().getTime();
+        cache.push(users);
+
+        return res.status(200).json(users);
+      }
     } catch (e) {
       console.log(e);
     }
